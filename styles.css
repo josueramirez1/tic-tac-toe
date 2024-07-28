@@ -1,0 +1,14 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  width: 300px;
+}
+
+.tile {
+  background-color: grey;
+  border: 1px solid black;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+}
