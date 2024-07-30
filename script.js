@@ -33,19 +33,39 @@ function flow() {
     prompt("Player 2: Pick index number from 1 to 9", "")
   );
 
-  if (numFromPlayer1 < 0 || numFromPlayer1 > 10) {
+  if (numFromPlayer1 < 1 || numFromPlayer1 > 9) {
     numFromPlayer1 = parseInt(
-      prompt("Player 1: Pick index number from 1 to 9", "")
+      prompt("Player 1: Pick another index number from 1 to 9", "")
     );
   }
 
-  if (numFromPlayer2 < 0 || numFromPlayer2 > 10) {
+  if (numFromPlayer2 < 1 || numFromPlayer2 > 9) {
     numFromPlayer2 = parseInt(
+      prompt("Player 2: Pick another index number from 1 to 9", "")
+    );
+  }
+
+  if (numFromPlayer1 !== numFromPlayer2) {
+    return { numFromPlayer1, numFromPlayer2 };
+  } else {
+    numFromPlayer2 = repeatChoice();
+    return { numFromPlayer1, numFromPlayer2 };
+  }
+
+  function repeatChoice() {
+    let numFromPlayer2 = parseInt(
       prompt("Player 2: Pick index number from 1 to 9", "")
     );
-  }
 
-  return { numFromPlayer1, numFromPlayer2 };
+    if (numFromPlayer2 < 1 || numFromPlayer2 > 9) {
+      numFromPlayer2 = parseInt(
+        prompt("Player 2: Pick another index number from 1 to 9", "")
+      );
+    }
+
+    if (numFromPlayer1 === numFromPlayer2) repeatChoice();
+    return numFromPlayer2;
+  }
 }
 
 console.log(Gameboard());
