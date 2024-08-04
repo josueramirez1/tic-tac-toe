@@ -42,12 +42,13 @@ function gameController() {
   let board = Gameboard();
   // Begin by picking the active player
   let activePlayer = player[0];
-  // Switch to second player if first player has taken a turn
-  if (activePlayer.turn > player[1].turn) {
-    activePlayer = player[1];
-  } else activePlayer = player[0];
 
   function playRound() {
+    // Switch to second player if first player has taken a turn
+    if (activePlayer.turn > player[1].turn) {
+      activePlayer = player[1];
+    } else activePlayer = player[0];
+
     console.log(activePlayer);
     // I want the player to pick a cell
     let row = parseInt(prompt("Select row from 0 to 2"));
@@ -58,14 +59,21 @@ function gameController() {
     console.table(board.getBoard());
 
     activePlayer.turn++;
-    activePlayer = player[1];
   }
 
   playRound();
   playRound();
+  playRound();
+
   // If there are three markers in a row, declare the winner
 
-  function declareWinner() {}
+  function declareWinner() {
+    board.getBoard().forEach((row) => {
+      if (row.every((item) => item === "x")) {
+        return `Congratulations! You Win!`;
+      }
+    });
+  }
 }
 
 gameController();
