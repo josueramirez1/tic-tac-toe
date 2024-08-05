@@ -66,19 +66,31 @@ function gameController() {
   function declareWinner() {
     // Get the board
     let updatedBoard = board.getBoard();
-    updatedBoard.forEach((rowArr) => {
-      // // Search for each row and find row that has all markers
+    console.log(updatedBoard);
+    // Win by horizontal row
+    for (let i = 0; i < updatedBoard.length; i++) {
       if (
-        rowArr.every((cell) => cell === Cell().getMarker(activePlayer.marker))
+        updatedBoard[i].every(
+          (cell) => cell === Cell().getMarker(activePlayer.marker)
+        )
       ) {
-        console.log("Congratulations! You Win!");
+        console.log("Congratulations! You win by row!");
       }
-    });
-
+    }
+    // Win by vertical row
+    let column = [];
+    for (let i = 0; i < updatedBoard.length; i++) {
+      for (let j = 0; j < 3; j++) {
+        column.push(updatedBoard[j][i]);
+        if (column.length === 3) {
+          if (column.every((entry) => entry === "x" || entry === "0")) {
+            console.log("Congratulations! You win by column!");
+          }
+        }
+      }
+    }
     console.table(updatedBoard);
   }
-
-  declareWinner();
 }
 
 gameController();
