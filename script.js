@@ -67,6 +67,31 @@ function gameController() {
     // Get the board
     let updatedBoard = board.getBoard();
     console.log(updatedBoard);
+
+    // Win by diagonal
+    let diagonal = [];
+    updatedBoard.forEach((row) => {
+      if (
+        row[0][0] === "x" ||
+        row[0][2] === "x" ||
+        row[0][0] === "o" ||
+        row[0][2] === "o" ||
+        row[1][1] === "x" ||
+        row[1][1] === "o" ||
+        row[2][0] === "x" ||
+        row[2][2] === "x" ||
+        row[2][0] === "o" ||
+        row[2][2] === "o"
+      ) {
+        diagonal.push(Cell().getMarker(activePlayer.marker));
+        if (diagonal.length === 3) {
+          if (diagonal.every((entry) => entry === "x" || entry === "o")) {
+            console.log("Congratulations! You win by diagonal!");
+          }
+        }
+      }
+    });
+
     // Win by horizontal row
     for (let i = 0; i < updatedBoard.length; i++) {
       if (
@@ -89,6 +114,7 @@ function gameController() {
         }
       }
     }
+
     console.table(updatedBoard);
   }
 }
