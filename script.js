@@ -9,14 +9,27 @@ function Gameboard() {
     }
   }
   const getBoard = () => board;
-  return { getBoard };
+
+  const dropMarker = (row, column, player) => {
+    const availableCells = board
+      .filter((row) => console.log(row[column].getValue() === 0))
+      .map((row) => row[column]);
+
+    console.log(availableCells);
+
+    if (!availableCells.length) return;
+
+    board[row][column].addMarker(player);
+  };
+
+  return { getBoard, dropMarker };
 }
 
 function Cell() {
-  let value = "___";
+  let value = 0;
   const getValue = () => value;
-  const getMarker = (marker) => (value = marker);
-  return { getValue, getMarker };
+  const addMarker = (marker) => (value = marker);
+  return { getValue, addMarker };
 }
 
 function Players() {
@@ -43,25 +56,33 @@ function gameController() {
   // Begin by picking the active player
   let activePlayer = player[0];
 
+  const switchPlayerTurn = () => {
+    activePlayer = activePlayer === player[0] ? player[1] : player[0];
+  };
+
   function playRound() {
     // Switch to second player if first player has taken a turn
-    if (activePlayer.turn > player[1].turn) {
-      activePlayer = player[1];
-    } else activePlayer = player[0];
-    console.log(activePlayer);
+    // if (activePlayer.turn > player[1].turn) {
+    //   activePlayer = player[1];
+    // } else activePlayer = player[0];
+    console.log(`${activePlayer.name}: place your marker.`);
     // I want the player to pick a cell
     let row = parseInt(prompt("Select row from 0 to 2"));
     let column = parseInt(prompt("Select column from 0 to 2"));
     // then I want the marker to be placed in the cell
-    board.getBoard()[row][column] = Cell().getMarker(activePlayer.marker);
+    board.dropMarker(row, column, activePlayer.marker);
+
+    switchPlayerTurn();
+
+    // board.getBoard()[row][column] = Cell().addMarker(activePlayer.marker);
     // Add tally to active player
     activePlayer.turn++;
     // Print updated board
     console.table(board.getBoard());
-    const result = declareWinner();
-    console.log(result);
+    // const result = declareWinner();
+    // console.log(result);
   }
-  let column = [];
+
   function declareWinner() {
     // Get the board
     let updatedBoard = board.getBoard();
@@ -100,7 +121,7 @@ function gameController() {
     for (let i = 0; i < updatedBoard.length; i++) {
       if (
         updatedBoard[i].every(
-          (cell) => cell === Cell().getMarker(activePlayer.marker)
+          (cell) => cell === Cell().addMarker(activePlayer.marker)
         )
       ) {
         return "Congratulations! You win by row!";
