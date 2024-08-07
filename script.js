@@ -5,7 +5,7 @@ function Gameboard() {
   for (let i = 0; i < rows; i++) {
     board[i] = [];
     for (let j = 0; j < cols; j++) {
-      board[i].push(Cell());
+      board[i].push(Cell().getValue());
     }
   }
   const getBoard = () => board;
@@ -86,31 +86,25 @@ function gameController() {
   function declareWinner() {
     // Get the board
     let updatedBoard = board.getBoard();
-    console.log(updatedBoard);
     // Win by diagonal
     if (activePlayer === player[0]) {
       for (let i = 0; i < updatedBoard.length; i++) {
         if (
-          (updatedBoard[0][0] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][2] === "x") ||
-          (updatedBoard[0][2] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][0] === "x")
+          (updatedBoard[0][0] === "x" || updatedBoard[0][2] === "x") &&
+          updatedBoard[1][1] === "x" &&
+          (updatedBoard[2][0] === "x" || updatedBoard[2][2] === "x")
         ) {
           return "Congratulations! You win by diagonal!";
         }
       }
     }
+
     if (activePlayer === player[1]) {
       for (let i = 0; i < updatedBoard.length; i++) {
         if (
-          (updatedBoard[0][0] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][2] === "o") ||
-          (updatedBoard[0][2] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][0] === "o")
+          (updatedBoard[0][0] === "o" || updatedBoard[0][2] === "o") &&
+          updatedBoard[1][1] === "o" &&
+          (updatedBoard[2][0] === "o" || updatedBoard[2][2] === "o")
         ) {
           return "Congratulations! You win by diagonal!";
         }
@@ -127,39 +121,17 @@ function gameController() {
         return "Congratulations! You win by row!";
       }
     }
-    // Win by column row
-
-    if (activePlayer === player[0]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
-        if (
-          (updatedBoard[0][0] === "x" &&
-            updatedBoard[1][0] === "x" &&
-            updatedBoard[2][0] === "x") ||
-          (updatedBoard[0][1] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][1] === "x") ||
-          (updatedBoard[0][2] === "x" &&
-            updatedBoard[1][2] === "x" &&
-            updatedBoard[2][2] === "x")
-        ) {
-          return "Congratulations! You win by column!";
-        }
-      }
-    }
-    if (activePlayer === player[1]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
-        if (
-          (updatedBoard[0][0] === "o" &&
-            updatedBoard[1][0] === "o" &&
-            updatedBoard[2][0] === "o") ||
-          (updatedBoard[0][1] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][1] === "o") ||
-          (updatedBoard[0][2] === "o" &&
-            updatedBoard[1][2] === "o" &&
-            updatedBoard[2][2] === "o")
-        ) {
-          return "Congratulations! You win by column!";
+    // Win by vertical row
+    let column = [];
+    for (let i = 0; i < updatedBoard.length; i++) {
+      for (let j = 0; j < 3; j++) {
+        column.push(updatedBoard[j][i]);
+        if (column.length === 3) {
+          if (column.every((entry) => entry === "x")) {
+            return "Congratulations! You win by column!";
+          } else if (column.every((entry) => entry === "o")) {
+            return "Congratulations! You win by column!";
+          }
         }
       }
     }
