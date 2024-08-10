@@ -48,7 +48,7 @@ function displayGame() {
     row.setAttribute("class", "row");
     board.appendChild(row);
     r.forEach((c) => {
-      const cell = document.createElement("div");
+      const cell = document.createElement("button");
       cell.setAttribute("class", "cell");
       const rows = document.querySelectorAll(".row");
       rows.forEach((b) => {
@@ -56,74 +56,91 @@ function displayGame() {
       });
     });
   });
-
-  return { score, message };
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "Reset Game";
+  resetBtn.setAttribute("class", "reset");
+  board.appendChild(resetBtn);
+  return { score, message, resetBtn };
 }
 
 function gameController() {
-  // Put the array of player into the player variable to use in the controller object
+  // Selectors
   let player = Players();
   const board = Gameboard();
   const screenController = displayGame();
+  const displayedBoard = document.querySelector(".board");
+  const cells = [...document.querySelectorAll(".cell")];
+  let rowIndex;
+  let columnIndex;
   let activePlayer = player[0];
+
   // Begin by picking the active player
   let switchingPlayer = () => {
     activePlayer = activePlayer === player[0] ? player[1] : player[0];
   };
-
-  const printNewRound = () => console.table(board.getBoard());
   let getActivePlayer = () => activePlayer;
+  //Print table on console
+  const printNewRound = () => console.table(board.getBoard());
 
-  const playRound = () => {
-    // Selectors
-    const displayedBoard = document.querySelector(".board");
-    let rowIndex;
-    let columnIndex;
-    // Message
-    screenController.message.textContent = `${
-      getActivePlayer().name
-    }: please choose a location.`;
+  // Display Message
+  screenController.message.textContent = `${
+    getActivePlayer().name
+  }: please choose a location.`;
 
-    // Player will pick a cell and click on location to put marker
-    displayedBoard.addEventListener("click", (e) => {
-      const row = [...document.querySelectorAll(".row")];
-      row.forEach((r, index) => {
-        if (r === e.target.closest(".row")) {
-          rowIndex = index;
+  // Player will pick a cell and click on location to put marker
+  displayedBoard.addEventListener("click", (e) => {
+    // Collecting index of row and column to add into board
+    if (!e.target.matches(".cell")) return;
+    const row = [...document.querySelectorAll(".row")];
+    row.forEach((r, index) => {
+      if (r === e.target.closest(".row")) {
+        rowIndex = index;
+      }
+    });
+    for (let i = 0; i < row.length; i++) {
+      let column = [...row[i].children];
+      column.forEach((c, index) => {
+        if (c === e.target.closest(".cell")) {
+          columnIndex = index;
         }
       });
-      for (let i = 0; i < row.length; i++) {
-        let column = [...row[i].children];
-        column.forEach((c, index) => {
-          if (c === e.target.closest(".cell")) {
-            columnIndex = index;
-          }
-        });
-      }
-      // Check if the cell already contains a marker
-      // if it does the move is not valid and function is restarted
-      if (board.getBoard()[rowIndex][columnIndex] !== Cell().getValue()) {
-        screenController.message.textContent = `Invalid move! ${
-          getActivePlayer().name
-        }: please choose another location.`;
-        playRound();
-      }
-      // then I want the marker to be placed in the cell
+    }
+    // Check if the cell already contains a marker
+    // if it does the move is not valid. Player is asked to pick another cell
+    if (board.getBoard()[rowIndex][columnIndex] !== Cell().getValue()) {
+      screenController.message.textContent = `Invalid move! ${
+        getActivePlayer().name
+      }: please choose another location.`;
+      return;
+    } else {
+      // If move is valid, then marker to be placed in the cell
       e.target.textContent = Cell().getMarker(getActivePlayer().marker);
       board.getBoard()[rowIndex][columnIndex] = Cell().getMarker(
         getActivePlayer().marker
       );
-      // Add tally to active player
       // Print updated board
       printNewRound();
-      console.log(declareWinner());
-      screenController.message.textContent = declareWinner();
-    });
-  };
+      // Check if there is a winner and display it
+      const result = declareWinner();
+      // Switch turns
+      switchingPlayer();
+      // If player wins, display result, if no one has one yet, display next player
+      result
+        ? (screenController.message.textContent = result)
+        : (screenController.message.textContent = `${
+            getActivePlayer().name
+          }: please choose a location.`);
+    }
+  });
 
   const declareWinner = () => {
-    // Get the board
+    // When marker is placed in the cell, check if player has one by...
+    // Getting the board
     let updatedBoard = board.getBoard();
+    // If player satisfies any conditions, then player will
+    // 1. Get a win tally
+    // 2. Disable all button cells to prevent changes
+    // 3. Displaying message
     // Win by diagonal
     if (activePlayer === player[0]) {
       for (let i = 0; i < updatedBoard.length; i++) {
@@ -136,6 +153,7 @@ function gameController() {
             updatedBoard[2][0] === "x")
         ) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[0].textContent = getActivePlayer().wins;
           return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
@@ -154,6 +172,7 @@ function gameController() {
             updatedBoard[2][0] === "o")
         ) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[1].textContent = getActivePlayer().wins;
           return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
@@ -170,12 +189,14 @@ function gameController() {
       ) {
         if (activePlayer === player[0]) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[0].textContent = getActivePlayer().wins;
           return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by horizontal!`);
         } else if (activePlayer === player[1]) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[1].textContent = getActivePlayer().wins;
           return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
@@ -184,7 +205,6 @@ function gameController() {
       }
     }
     // Win by column row
-
     if (activePlayer === player[0]) {
       for (let i = 0; i < updatedBoard.length; i++) {
         if (
@@ -199,9 +219,10 @@ function gameController() {
             updatedBoard[2][2] === "x")
         ) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[0].textContent = getActivePlayer().wins;
 
-          return (message.textContent = `Congratulations ${
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by column!`);
         }
@@ -221,16 +242,32 @@ function gameController() {
             updatedBoard[2][2] === "o")
         ) {
           getActivePlayer().wins++;
+          cells.forEach((cell) => (cell.disabled = true));
           screenController.score[1].textContent = getActivePlayer().wins;
-          return (message.textContent = `Congratulations ${
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by column!`);
         }
       }
     }
-    switchingPlayer();
   };
-  // initialize the game
-  playRound();
+  // If user decides to reset button...
+  screenController.resetBtn.addEventListener("click", (e) => {
+    cells.forEach((cell) => {
+      cell.disabled = false;
+      cell.textContent = "";
+    });
+    let resetBtn = board.getBoard();
+    resetBtn.forEach((row) => {
+      for (let i = 0; i < row.length; i++) {
+        row[i] = Cell().getValue();
+      }
+    });
+    activePlayer = player[0];
+    screenController.message.textContent = `${
+      getActivePlayer().name
+    }: please choose a location.`;
+    printNewRound();
+  });
 }
 gameController();
