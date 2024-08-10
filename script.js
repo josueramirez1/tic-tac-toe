@@ -1,7 +1,7 @@
 function Gameboard() {
   let board = [];
-  let rows = 3;
-  let cols = 3;
+  const rows = 3;
+  const cols = 3;
   for (let i = 0; i < rows; i++) {
     board[i] = [];
     for (let j = 0; j < cols; j++) {
@@ -9,19 +9,18 @@ function Gameboard() {
     }
   }
   const getBoard = () => board;
-
   return { getBoard };
 }
 
 function Cell() {
   let value = "___";
-  const getValue = () => value;
-  const getMarker = (marker) => (value = marker);
+  let getValue = () => value;
+  let getMarker = (marker) => (value = marker);
   return { getValue, getMarker };
 }
 
 function Players() {
-  let player = [
+  const player = [
     {
       name: "Player One",
       marker: "x",
@@ -43,65 +42,88 @@ function displayGame() {
   const message = document.querySelector(".message");
   board.setAttribute("class", "board");
   body.appendChild(board);
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement("div");
-    cell.setAttribute("class", "cell");
-    board.appendChild(cell);
-  }
+  const gameBoard = Gameboard().getBoard();
+  gameBoard.forEach((r) => {
+    const row = document.createElement("div");
+    row.setAttribute("class", "row");
+    board.appendChild(row);
+    r.forEach((c) => {
+      const cell = document.createElement("div");
+      cell.setAttribute("class", "cell");
+      const rows = document.querySelectorAll(".row");
+      rows.forEach((b) => {
+        b.appendChild(cell);
+      });
+    });
+  });
 
   return { score, message };
 }
 
-displayGame();
-
 function gameController() {
   // Put the array of player into the player variable to use in the controller object
   let player = Players();
-  let board = Gameboard();
-  let score = displayGame().score;
-  let message = displayGame().message;
+  const board = Gameboard();
+  const screenController = displayGame();
   let activePlayer = player[0];
-  // Display the game
-  // displayGame();
-
   // Begin by picking the active player
-  const switchingPlayer = () => {
+  let switchingPlayer = () => {
     activePlayer = activePlayer === player[0] ? player[1] : player[0];
   };
 
-  const printNewRound = () => {
-    console.table(board.getBoard());
-  };
-  const getActivePlayer = () => activePlayer;
+  const printNewRound = () => console.table(board.getBoard());
+  let getActivePlayer = () => activePlayer;
 
   const playRound = () => {
-    message.textContent = `${getActivePlayer().name}: please choose a spot.`;
-    console.log(`${getActivePlayer().name}: please choose a spot.`);
+    // Selectors
+    const displayedBoard = document.querySelector(".board");
+    let rowIndex;
+    let columnIndex;
+    // Message
+    screenController.message.textContent = `${
+      getActivePlayer().name
+    }: please choose a location.`;
 
-    // I want the player to pick a cell
-    let row = parseInt(prompt("Select row from 0 to 2"));
-    let column = parseInt(prompt("Select column from 0 to 2"));
-    // Check if the cell already contains a marker
-    // if it does the move is not valid and function is restarted
-    if (board.getBoard()[row][column] !== Cell().getValue()) {
-      message.textContent = `Invalid move! ${
-        getActivePlayer().name
-      }: please choose a spot.`;
-      console.log("Invalid move");
-      playRound();
-    }
-    // then I want the marker to be placed in the cell
-    board.getBoard()[row][column] = Cell().getMarker(getActivePlayer().marker);
-    // Add tally to active player
-    // Print updated board
-    printNewRound();
-    console.log(declareWinner());
+    // Player will pick a cell and click on location to put marker
+    displayedBoard.addEventListener("click", (e) => {
+      const row = [...document.querySelectorAll(".row")];
+      row.forEach((r, index) => {
+        if (r === e.target.closest(".row")) {
+          rowIndex = index;
+        }
+      });
+      for (let i = 0; i < row.length; i++) {
+        let column = [...row[i].children];
+        column.forEach((c, index) => {
+          if (c === e.target.closest(".cell")) {
+            columnIndex = index;
+          }
+        });
+      }
+      // Check if the cell already contains a marker
+      // if it does the move is not valid and function is restarted
+      if (board.getBoard()[rowIndex][columnIndex] !== Cell().getValue()) {
+        screenController.message.textContent = `Invalid move! ${
+          getActivePlayer().name
+        }: please choose another location.`;
+        playRound();
+      }
+      // then I want the marker to be placed in the cell
+      e.target.textContent = Cell().getMarker(getActivePlayer().marker);
+      board.getBoard()[rowIndex][columnIndex] = Cell().getMarker(
+        getActivePlayer().marker
+      );
+      // Add tally to active player
+      // Print updated board
+      printNewRound();
+      console.log(declareWinner());
+      screenController.message.textContent = declareWinner();
+    });
   };
 
   const declareWinner = () => {
     // Get the board
     let updatedBoard = board.getBoard();
-
     // Win by diagonal
     if (activePlayer === player[0]) {
       for (let i = 0; i < updatedBoard.length; i++) {
@@ -114,8 +136,8 @@ function gameController() {
             updatedBoard[2][0] === "x")
         ) {
           getActivePlayer().wins++;
-          score[0].textContent = getActivePlayer().wins;
-          return (message.textContent = `Congratulations ${
+          screenController.score[0].textContent = getActivePlayer().wins;
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by diagonal!`);
         }
@@ -132,8 +154,8 @@ function gameController() {
             updatedBoard[2][0] === "o")
         ) {
           getActivePlayer().wins++;
-          score[1].textContent = getActivePlayer().wins;
-          return (message.textContent = `Congratulations ${
+          screenController.score[1].textContent = getActivePlayer().wins;
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by diagonal!`);
         }
@@ -148,14 +170,14 @@ function gameController() {
       ) {
         if (activePlayer === player[0]) {
           getActivePlayer().wins++;
-          score[0].textContent = getActivePlayer().wins;
-          return (message.textContent = `Congratulations ${
+          screenController.score[0].textContent = getActivePlayer().wins;
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by horizontal!`);
         } else if (activePlayer === player[1]) {
           getActivePlayer().wins++;
-          score[1].textContent = getActivePlayer().wins;
-          return (message.textContent = `Congratulations ${
+          screenController.score[1].textContent = getActivePlayer().wins;
+          return (screenController.message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by horizontal!`);
         }
@@ -177,7 +199,7 @@ function gameController() {
             updatedBoard[2][2] === "x")
         ) {
           getActivePlayer().wins++;
-          score[0].textContent = getActivePlayer().wins;
+          screenController.score[0].textContent = getActivePlayer().wins;
 
           return (message.textContent = `Congratulations ${
             getActivePlayer().name
@@ -199,7 +221,7 @@ function gameController() {
             updatedBoard[2][2] === "o")
         ) {
           getActivePlayer().wins++;
-          score[1].textContent = getActivePlayer().wins;
+          screenController.score[1].textContent = getActivePlayer().wins;
           return (message.textContent = `Congratulations ${
             getActivePlayer().name
           }! You win by column!`);
@@ -207,7 +229,6 @@ function gameController() {
       }
     }
     switchingPlayer();
-    playRound();
   };
   // initialize the game
   playRound();
