@@ -37,11 +37,12 @@ function Players() {
 
 function displayGame() {
   const body = document.querySelector("body");
+  const container = document.querySelector(".container");
   const board = document.createElement("div");
   const score = document.querySelectorAll(".score");
   const message = document.querySelector(".message");
   board.setAttribute("class", "board");
-  body.appendChild(board);
+  container.appendChild(board);
   const gameBoard = Gameboard().getBoard();
   gameBoard.forEach((r) => {
     const row = document.createElement("div");
@@ -59,7 +60,7 @@ function displayGame() {
   const resetBtn = document.createElement("button");
   resetBtn.textContent = "Reset Game";
   resetBtn.setAttribute("class", "reset");
-  board.appendChild(resetBtn);
+  container.appendChild(resetBtn);
   return { score, message, resetBtn };
 }
 
@@ -114,6 +115,7 @@ function gameController() {
       return;
     } else {
       // If move is valid, then marker to be placed in the cell
+      e.target.style = "color:#fff;";
       e.target.textContent = Cell().getMarker(getActivePlayer().marker);
       board.getBoard()[rowIndex][columnIndex] = Cell().getMarker(
         getActivePlayer().marker
