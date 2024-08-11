@@ -250,6 +250,16 @@ function gameController() {
         }
       }
     }
+    let everyCell = [];
+    for (let i = 0; i < updatedBoard.length; i++) {
+      for (let j = 0; j < updatedBoard[i].length; j++) {
+        everyCell.push(updatedBoard[i][j]);
+      }
+    }
+    if (everyCell.every((item) => item !== Cell().getValue())) {
+      cells.forEach((cell) => (cell.disabled = true));
+      return (screenController.message.textContent = `It's a draw! Play again?`);
+    }
   };
   // If user decides to reset button...
   screenController.resetBtn.addEventListener("click", (e) => {
