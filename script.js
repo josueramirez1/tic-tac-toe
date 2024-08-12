@@ -135,6 +135,26 @@ function gameController() {
     }
   });
 
+  const declaringWinner = () => {
+    if (activePlayer === player[0]) {
+      getActivePlayer().wins++;
+      cells.forEach((cell) => (cell.disabled = true));
+      screenController.score[0].textContent = getActivePlayer().wins;
+      return (screenController.message.textContent = `Congratulations ${
+        getActivePlayer().name
+      }! You win!`);
+    }
+
+    if (activePlayer === player[1]) {
+      getActivePlayer().wins++;
+      cells.forEach((cell) => (cell.disabled = true));
+      screenController.score[1].textContent = getActivePlayer().wins;
+      return (screenController.message.textContent = `Congratulations ${
+        getActivePlayer().name
+      }! You win!`);
+    }
+  };
+
   const declareWinner = () => {
     // When marker is placed in the cell, check if player has one by...
     // Getting the board
@@ -143,112 +163,38 @@ function gameController() {
     // 1. Get a win tally
     // 2. Disable all button cells to prevent changes
     // 3. Displaying message
-    // Win by diagonal
-    if (activePlayer === player[0]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
-        if (
-          (updatedBoard[0][0] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][2] === "x") ||
-          (updatedBoard[0][2] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][0] === "x")
-        ) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[0].textContent = getActivePlayer().wins;
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by diagonal!`);
-        }
-      }
-    }
-    if (activePlayer === player[1]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
-        if (
-          (updatedBoard[0][0] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][2] === "o") ||
-          (updatedBoard[0][2] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][0] === "o")
-        ) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[1].textContent = getActivePlayer().wins;
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by diagonal!`);
-        }
-      }
-    }
-    // Win by horizontal row
-    for (let i = 0; i < updatedBoard.length; i++) {
-      if (
-        updatedBoard[i].every(
-          (cell) => cell === Cell().getMarker(getActivePlayer().marker)
-        )
-      ) {
-        if (activePlayer === player[0]) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[0].textContent = getActivePlayer().wins;
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by horizontal!`);
-        } else if (activePlayer === player[1]) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[1].textContent = getActivePlayer().wins;
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by horizontal!`);
-        }
-      }
-    }
-    // Win by column row
-    if (activePlayer === player[0]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
-        if (
-          (updatedBoard[0][0] === "x" &&
-            updatedBoard[1][0] === "x" &&
-            updatedBoard[2][0] === "x") ||
-          (updatedBoard[0][1] === "x" &&
-            updatedBoard[1][1] === "x" &&
-            updatedBoard[2][1] === "x") ||
-          (updatedBoard[0][2] === "x" &&
-            updatedBoard[1][2] === "x" &&
-            updatedBoard[2][2] === "x")
-        ) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[0].textContent = getActivePlayer().wins;
 
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by column!`);
-        }
-      }
-    }
-    if (activePlayer === player[1]) {
-      for (let i = 0; i < updatedBoard.length; i++) {
+    for (let i = 0; i < updatedBoard.length; i++) {
+      for (let j = 0; j < updatedBoard[i].length; j++) {
         if (
-          (updatedBoard[0][0] === "o" &&
-            updatedBoard[1][0] === "o" &&
-            updatedBoard[2][0] === "o") ||
-          (updatedBoard[0][1] === "o" &&
-            updatedBoard[1][1] === "o" &&
-            updatedBoard[2][1] === "o") ||
-          (updatedBoard[0][2] === "o" &&
-            updatedBoard[1][2] === "o" &&
-            updatedBoard[2][2] === "o")
+          updatedBoard[i][j] !== "___" &&
+          updatedBoard[i][0] === updatedBoard[i][1] &&
+          updatedBoard[i][1] === updatedBoard[i][2]
         ) {
-          getActivePlayer().wins++;
-          cells.forEach((cell) => (cell.disabled = true));
-          screenController.score[1].textContent = getActivePlayer().wins;
-          return (screenController.message.textContent = `Congratulations ${
-            getActivePlayer().name
-          }! You win by column!`);
+          return declaringWinner();
+        }
+
+        if (
+          updatedBoard[i][j] !== "___" &&
+          updatedBoard[0][j] === updatedBoard[1][j] &&
+          updatedBoard[1][j] === updatedBoard[2][j]
+        ) {
+          return declaringWinner();
+        }
+
+        if (
+          (updatedBoard[0][0] !== "___" && updatedBoard[0][0]) ===
+            updatedBoard[1][1] &&
+          updatedBoard[1][1] === updatedBoard[2][2]
+        ) {
+          return declaringWinner();
+        }
+        if (
+          (updatedBoard[0][2] !== "___" && updatedBoard[0][2]) ===
+            updatedBoard[1][1] &&
+          updatedBoard[1][1] === updatedBoard[2][0]
+        ) {
+          return declaringWinner();
         }
       }
     }
