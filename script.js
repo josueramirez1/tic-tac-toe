@@ -33,11 +33,19 @@ const getNames = () => {
   playerTwo.name = playerTwoName;
 };
 
-const playerTurn = (gameboard, playerOne, playerTwo, turnCount) => {
-  console.table(gameboard);
-  console.log(turnCount);
+const playerTurn = (
+  gameboard,
+  playerOne,
+  playerTwo,
+  getTurnCount,
+  addTurnCount,
+) => {
   let activePlayer;
-  turnCount % 2 === 0 ? (activePlayer = playerOne) : (activePlayer = playerTwo);
+  let currentCount = getTurnCount();
+
+  currentCount % 2 === 0
+    ? (activePlayer = playerOne)
+    : (activePlayer = playerTwo);
 
   const activePlayerNum = parseInt(
     prompt(`${activePlayer.name}: From 0 to 8, choose a number`),
@@ -47,45 +55,42 @@ const playerTurn = (gameboard, playerOne, playerTwo, turnCount) => {
   if (activePlayerNum >= 0 && activePlayerNum <= 2) {
     if (gameboard[0][activePlayerNum] !== "") {
       alert("Spot taken. Pick another space");
-      playerTurn(gameboard, playerOne, playerTwo, turnCount);
+      playerTurn(gameboard, playerOne, playerTwo, currentCount);
       return;
     }
     gameboard[0][activePlayerNum] = activePlayer.marker;
-    checkWinner(gameboard, activePlayer);
-    return ++turnCount;
   }
 
   if (activePlayerNum >= 3 && activePlayerNum <= 5) {
     if (gameboard[1][activePlayerNum - 3] !== "") {
       alert("Spot taken 2. Pick another space");
-      playerTurn(gameboard, playerOne, playerTwo, turnCount);
+      playerTurn(gameboard, playerOne, playerTwo, currentCount);
       return;
     }
     gameboard[1][activePlayerNum - 3] = activePlayer.marker;
-    checkWinner(gameboard, activePlayer);
-    return ++turnCount;
   }
 
   if (activePlayerNum >= 6 && activePlayerNum <= 8) {
     if (gameboard[2][activePlayerNum - 6] !== "") {
       alert("Spot taken 3. Pick another space");
-      playerTurn(gameboard, playerOne, playerTwo, turnCount);
+      playerTurn(gameboard, playerOne, playerTwo, currentCount);
       return;
     }
     gameboard[2][activePlayerNum - 6] = activePlayer.marker;
-    checkWinner(gameboard, activePlayer);
-    return ++turnCount;
   }
+
+  checkWinner(gameboard, activePlayer, addTurnCount);
 };
 
-const playRound = (gameboard, turnCount) => {
-  playerTurn(gameboard, playerOne, playerTwo, turnCount);
-  console.log(turnCount);
-  //if conditions haven't been met keep playing
-  playRound(gameboard, turnCount);
+const playRound = (gameboard, getTurnCount, addTurnCount) => {
+  playerTurn(gameboard, playerOne, playerTwo, getTurnCount, addTurnCount);
+
+  //if playerTurn function returned a number that was greater than previous round started continue playing the game
+
+  playRound(gameboard, getTurnCount, addTurnCount);
 };
 
-const checkRowWin = (gameboard, activePlayer) => {
+const checkRowWin = (gameboard, activePlayer, addTurnCount) => {
   const [columnArrOne, columnArrTwo, columnArrThree] = gameboard;
   // This condition checks winners for row wins
   if (
@@ -96,6 +101,7 @@ const checkRowWin = (gameboard, activePlayer) => {
     endGame(activePlayer.name, gameboard);
     return;
   }
+  addTurnCount();
 };
 
 const checkColumnWin = (gameboard) => {
@@ -114,22 +120,24 @@ const checkColumnWin = (gameboard) => {
 };
 
 const endGame = (playerName, gameboard) => {
-  debugger;
   alert(`${playerName} wins!`);
   console.table(gameboard);
   return;
 };
 
-const checkWinner = (gameboard, activePlayer) => {
-  checkRowWin(gameboard, activePlayer);
+const checkWinner = (gameboard, activePlayer, addTurnCount) => {
+  checkRowWin(gameboard, activePlayer, addTurnCount);
   // checkColumnWin(gameboard);
 };
 
 const playGame = () => {
   const gameboard = Gameboard.getBoard();
   let turnCount = 0;
+  const getTurnCount = () => turnCount;
+  const addTurnCount = () => ++turnCount;
+
   getNames();
-  playRound(gameboard, turnCount);
+  playRound(gameboard, getTurnCount, addTurnCount);
 };
 
 playGame();
