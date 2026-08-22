@@ -50,7 +50,7 @@ const Controller = () => {
   };
 
   //Gets player names one time
-  getNames();
+  // getNames();
 
   const playRound = () => {
     let previousCount = getTurnCount();
@@ -119,9 +119,24 @@ const Controller = () => {
     subtractTurnCount,
   ) => {
     // checkRowWin(gameboard, activePlayer, subtractTurnCount);
-    checkColumnWin(gameboard, activePlayer, subtractTurnCount);
+    // checkColumnWin(gameboard, activePlayer, subtractTurnCount);
     // checkDiagnolWin(gameboard, activePlayer, subtractTurnCount);
+    checkDraw(gameboard, activePlayer, subtractTurnCount);
     addTurnCount();
+  };
+
+  const checkDraw = (gameboard, activePlayer, subtractTurnCount) => {
+    const [columnArrOne, columnArrTwo, columnArrThree] = gameboard;
+    // This condition checks winners for row wins
+
+    if (
+      columnArrOne.every((space) => space !== "") &&
+      columnArrTwo.every((space) => space !== "") &&
+      columnArrThree.every((space) => space !== "")
+    ) {
+      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      return;
+    }
   };
 
   const checkRowWin = (gameboard, activePlayer, subtractTurnCount) => {
@@ -199,6 +214,5 @@ const Controller = () => {
   return { playRound };
 };
 
-const playGame = Controller();
-console.log(playGame);
-playGame.playRound();
+const game = Controller();
+game.playRound();
