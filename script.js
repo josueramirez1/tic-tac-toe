@@ -50,7 +50,7 @@ const Controller = () => {
   };
 
   //Gets player names one time
-  // getNames();
+  getNames();
 
   const playRound = () => {
     let previousCount = getTurnCount();
@@ -118,14 +118,14 @@ const Controller = () => {
     addTurnCount,
     subtractTurnCount,
   ) => {
-    // checkRowWin(gameboard, activePlayer, subtractTurnCount);
-    // checkColumnWin(gameboard, activePlayer, subtractTurnCount);
-    // checkDiagnolWin(gameboard, activePlayer, subtractTurnCount);
-    checkDraw(gameboard, activePlayer, subtractTurnCount);
+    checkRowWin(gameboard, activePlayer, subtractTurnCount);
+    checkColumnWin(gameboard, activePlayer, subtractTurnCount);
+    checkDiagnolWin(gameboard, activePlayer, subtractTurnCount);
+    checkDraw(gameboard, subtractTurnCount);
     addTurnCount();
   };
 
-  const checkDraw = (gameboard, activePlayer, subtractTurnCount) => {
+  const checkDraw = (gameboard, subtractTurnCount) => {
     const [columnArrOne, columnArrTwo, columnArrThree] = gameboard;
     // This condition checks winners for row wins
 
@@ -134,7 +134,7 @@ const Controller = () => {
       columnArrTwo.every((space) => space !== "") &&
       columnArrThree.every((space) => space !== "")
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showDraw(gameboard, subtractTurnCount);
       return;
     }
   };
@@ -147,7 +147,7 @@ const Controller = () => {
       columnArrTwo.every((space) => space === activePlayer.marker) ||
       columnArrThree.every((space) => space === activePlayer.marker)
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
   };
@@ -159,7 +159,7 @@ const Controller = () => {
       columnArrTwo[0] === activePlayer.marker &&
       columnArrThree[0] === activePlayer.marker
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
 
@@ -168,7 +168,7 @@ const Controller = () => {
       columnArrTwo[1] === activePlayer.marker &&
       columnArrThree[1] === activePlayer.marker
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
 
@@ -177,7 +177,7 @@ const Controller = () => {
       columnArrTwo[2] === activePlayer.marker &&
       columnArrThree[2] === activePlayer.marker
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
   };
@@ -190,7 +190,7 @@ const Controller = () => {
       columnArrTwo[1] === activePlayer.marker &&
       columnArrThree[2] === activePlayer.marker
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
 
@@ -199,14 +199,21 @@ const Controller = () => {
       columnArrTwo[1] === activePlayer.marker &&
       columnArrThree[0] === activePlayer.marker
     ) {
-      endGame(activePlayer.name, gameboard, subtractTurnCount);
+      showWinner(activePlayer.name, gameboard, subtractTurnCount);
       return;
     }
   };
 
-  const endGame = (playerName, gameboard, subtractTurnCount) => {
+  const showWinner = (playerName, gameboard, subtractTurnCount) => {
     alert(`${playerName} wins!`);
     console.table(gameboard);
+    subtractTurnCount();
+    return;
+  };
+
+  const showDraw = (gameboard, subtractTurnCount) => {
+    alert("It's a draw!. Play again?");
+    console.log(gameboard);
     subtractTurnCount();
     return;
   };
@@ -214,5 +221,5 @@ const Controller = () => {
   return { playRound };
 };
 
-const game = Controller();
-game.playRound();
+// const game = Controller();
+// game.playRound();
