@@ -1,4 +1,5 @@
 const Gameboard = () => {
+  //Logic
   const board = [];
   let turnCount = 0;
 
@@ -15,6 +16,8 @@ const Gameboard = () => {
   const getTurnCount = () => turnCount;
   const addTurnCount = () => ++turnCount;
   const subtractTurnCount = () => --turnCount;
+
+  //UI
 
   return { getBoard, getTurnCount, addTurnCount, subtractTurnCount };
 };
