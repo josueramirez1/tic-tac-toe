@@ -1,4 +1,6 @@
 const Gameboard = () => {
+  //Selector
+  const body = document.querySelector("body");
   //Logic
   const board = [];
   let turnCount = 0;
@@ -19,7 +21,30 @@ const Gameboard = () => {
 
   //UI
 
-  return { getBoard, getTurnCount, addTurnCount, subtractTurnCount };
+  const printBoard = () => {
+    //create container
+    const div = document.createElement("div");
+    div.classList.add("container");
+    body.appendChild(div);
+    //create array to append later
+    let boardToPrint = [];
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board.length; j++) {
+        const space = document.createElement("div");
+        space.classList.add("space");
+        boardToPrint.push(space);
+      }
+    }
+    boardToPrint.forEach((space) => div.appendChild(space));
+  };
+
+  return {
+    getBoard,
+    getTurnCount,
+    addTurnCount,
+    subtractTurnCount,
+    printBoard,
+  };
 };
 
 //Players
@@ -38,10 +63,17 @@ const Players = () => {
   return { playerOne, playerTwo };
 };
 
+//Gameflow
+
 const Controller = () => {
   //create new objects to use for game
-  const { getBoard, getTurnCount, addTurnCount, subtractTurnCount } =
-    Gameboard();
+  const {
+    getBoard,
+    getTurnCount,
+    addTurnCount,
+    subtractTurnCount,
+    printBoard,
+  } = Gameboard();
   const { playerOne, playerTwo } = Players();
   const gameboard = getBoard();
 
@@ -53,7 +85,7 @@ const Controller = () => {
   };
 
   //Gets player names one time
-  getNames();
+  // getNames();
 
   const playRound = () => {
     let previousCount = getTurnCount();
@@ -221,8 +253,9 @@ const Controller = () => {
     return;
   };
 
-  return { playRound };
+  return { playRound, printBoard };
 };
 
-// const game = Controller();
+const game = Controller();
+game.printBoard();
 // game.playRound();

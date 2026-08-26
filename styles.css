@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 450px;
+  height: 450px;
+  background-color: blue;
+
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.space {
+  background-color: black;
+  width: 125px;
+  flex: 1 0 auto;
+  border: 1px solid white;
+}
