@@ -5,7 +5,7 @@ body {
   flex-direction: column;
   justify-content: center;
   height: 100vh;
-  gap: 50px;
+
   align-items: center;
   box-sizing: border-box;
 
@@ -24,6 +24,7 @@ body {
 .space {
   background-color: black;
   width: 125px;
+  height: 175px;
   flex: 1 0 auto;
   border: 1px solid white;
   cursor: pointer;
