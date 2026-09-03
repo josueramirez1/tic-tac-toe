@@ -1,14 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Eczar:wght@400..800&family=Grenze:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 body {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   height: 100vh;
+  gap: 50px;
   align-items: center;
   box-sizing: border-box;
+
+  font-family: "Eczar";
 }
 
-.container {
-  width: 450px;
-  height: 450px;
+.game-container {
+  width: 500px;
+  height: 500px;
   background-color: blue;
 
   display: flex;
@@ -20,4 +26,21 @@ body {
   width: 125px;
   flex: 1 0 auto;
   border: 1px solid white;
+  cursor: pointer;
+  color: white;
+  font-size: 32px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inactive {
+  pointer-events: none;
+}
+
+.name-container {
+  display: flex;
+  justify-content: space-between;
+  width: 450px;
 }
