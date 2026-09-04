@@ -1,22 +1,37 @@
+const Players = () => {
+  const players = [
+    { name, marker: "X" },
+    { name, marker: "O" },
+  ];
+
+  return { players };
+};
+
 const Gameboard = () => {
   //Logic
   let board = [];
   let turnCount = 0;
 
-  for (let i = 0; i <= 2; i++) {
-    const column = [];
-    for (let j = 0; j <= 2; j++) {
-      const space = "";
-      column.push(space);
+  const createBoard = () => {
+    board = [];
+    turnCount = 0;
+
+    for (let i = 0; i <= 2; i++) {
+      const column = [];
+      for (let j = 0; j <= 2; j++) {
+        const space = "";
+        column.push(space);
+      }
+      board.push(column);
     }
-    board.push(column);
-  }
+  };
+
+  createBoard();
 
   const getBoard = () => board;
   const getTurnCount = () => turnCount;
   const addTurnCount = () => ++turnCount;
   const subtractTurnCount = () => --turnCount;
-
   //UI
 
   const fetchNames = (playerOne, playerTwo) => {
@@ -26,13 +41,15 @@ const Gameboard = () => {
     playerTwo.name = playerTwoName;
   };
 
-  const printNames = (playerOne, playerTwo) => {
-    //print
+  const printContainer = () => {
     const body = document.querySelector("body");
     const container = document.createElement("div");
     container.classList.add("container");
     body.appendChild(container);
-    //create container for names
+  };
+
+  const printNames = (playerOne, playerTwo) => {
+    const container = document.querySelector(".container");
     const nameDiv = document.createElement("div");
     const messageDiv = document.createElement("div");
     nameDiv.classList.add("name-container");
@@ -51,7 +68,6 @@ const Gameboard = () => {
     const gameDiv = document.createElement("div");
     gameDiv.classList.add("game-container");
     container.appendChild(gameDiv);
-    //create array to append later
     let boardToPrint = [];
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board.length; j++) {
@@ -65,55 +81,48 @@ const Gameboard = () => {
 
   return {
     fetchNames,
+    printContainer,
     printNames,
     getBoard,
+    printBoard,
     getTurnCount,
     addTurnCount,
     subtractTurnCount,
-    printBoard,
+    createBoard,
   };
 };
-
-//Players
-
-const Players = () => {
-  const playerOne = {
-    name,
-    marker: "X",
-  };
-
-  const playerTwo = {
-    name,
-    marker: "O",
-  };
-
-  return { playerOne, playerTwo };
-};
-
-//Gameflow
 
 const Controller = () => {
-  //create new objects to use for game
+  //creating player instance with two players
+  const { players } = Players();
+  //creating componenets of gameboard, including names, gameboard, counting
   const {
     fetchNames,
+    printContainer,
     printNames,
     getBoard,
+    printBoard,
     getTurnCount,
     addTurnCount,
     subtractTurnCount,
-    printBoard,
+    createBoard,
   } = Gameboard();
-  const { playerOne, playerTwo } = Players();
-  const gameboard = getBoard();
 
-  //get names
+  //calling the console gameboard
 
   const initGame = () => {
-    if (playerOne.name === "" || playerTwo.name === "") {
+    const [playerOne, playerTwo] = players;
+    const noName = players.some((player) => player.name === "");
+    if (noName) {
       fetchNames(playerOne, playerTwo);
+      printContainer();
     }
+
     printNames(playerOne, playerTwo);
+    createBoard();
     printBoard();
+    //console board
+    let gameboard = getBoard();
     //get selectors
     const spaces = document.querySelectorAll(".space");
     spaces.forEach((space, index) =>
@@ -139,9 +148,10 @@ const Controller = () => {
     e,
   ) => {
     let activePlayer;
-    let currentCount = getTurnCount();
+    let activeNum = getTurnCount();
+    const [playerOne, playerTwo] = players;
 
-    currentCount % 2 === 0
+    activeNum % 2 === 0
       ? (activePlayer = playerOne)
       : (activePlayer = playerTwo);
 
@@ -150,7 +160,7 @@ const Controller = () => {
     if (activePlayerNum >= 0 && activePlayerNum <= 2) {
       if (gameboard[0][activePlayerNum] !== "") {
         alert("Spot taken. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index);
+        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
         return;
       }
       gameboard[0][activePlayerNum] = activePlayer.marker;
@@ -160,7 +170,7 @@ const Controller = () => {
     if (activePlayerNum >= 3 && activePlayerNum <= 5) {
       if (gameboard[1][activePlayerNum - 3] !== "") {
         alert("Spot taken 2. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index);
+        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
         return;
       }
       gameboard[1][activePlayerNum - 3] = activePlayer.marker;
@@ -170,7 +180,7 @@ const Controller = () => {
     if (activePlayerNum >= 6 && activePlayerNum <= 8) {
       if (gameboard[2][activePlayerNum - 6] !== "") {
         alert("Spot taken 3. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index);
+        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
         return;
       }
       gameboard[2][activePlayerNum - 6] = activePlayer.marker;
@@ -296,17 +306,9 @@ const Controller = () => {
     messageDiv.append(message, button);
     subtractTurnCount();
     spaces.forEach((space) => space.classList.add("inactive"));
+    resetGame();
 
-    const resetBtn = document.querySelector(".reset");
-    resetBtn.addEventListener("click", () => {
-      const messageDiv = document.querySelector(".message-container");
-      const gameDiv = document.querySelector(".game-container");
-      messageDiv.textContent = "";
-      gameDiv.remove();
-
-      const { initGame } = Controller();
-      initGame();
-    });
+    return;
   };
 
   const showDraw = (subtractTurnCount, spaces) => {
@@ -318,6 +320,21 @@ const Controller = () => {
     messageDiv.append(message, button);
     subtractTurnCount();
     spaces.forEach((space) => space.classList.add("inactive"));
+
+    return;
+  };
+
+  const resetGame = () => {
+    const resetBtn = document.querySelector(".reset");
+    resetBtn.addEventListener("click", () => {
+      const messageDiv = document.querySelector(".message-container");
+      const nameDiv = document.querySelector(".name-container");
+      const gameDiv = document.querySelector(".game-container");
+      nameDiv.remove();
+      messageDiv.remove();
+      gameDiv.remove();
+      initGame();
+    });
   };
 
   return { initGame };
