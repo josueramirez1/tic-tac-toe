@@ -18,22 +18,23 @@ body {
 
 .game-container {
   width: 500px;
-  height: 500px;
-  background-color: blue;
+  height: auto;
+  background-color: #fff;
 
   display: flex;
   flex-wrap: wrap;
 }
 
 .space {
-  background-color: black;
+  background-color: rgb(2, 75, 18);
   width: 165px;
   height: 175px;
   flex: 1 0 auto;
   border: 1px solid white;
   cursor: pointer;
   color: white;
-  font-size: 32px;
+  font-size: 64px;
+  border-radius: 4px;
 
   display: flex;
   justify-content: center;
@@ -48,13 +49,18 @@ body {
   display: flex;
   justify-content: space-between;
   width: 450px;
+
+  font-size: 24px;
 }
 
 .message-container {
   text-align: center;
-  height: 72px;
+  height: 84px;
+
+  font-size: 24px;
 }
 
 .reset {
   text-align: center;
+  padding: 4px 8px;
 }
