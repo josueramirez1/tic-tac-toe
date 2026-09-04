@@ -1,6 +1,4 @@
 const Gameboard = () => {
-  //Selector
-  const body = document.querySelector("body");
   //Logic
   let board = [];
   let turnCount = 0;
@@ -21,6 +19,32 @@ const Gameboard = () => {
 
   //UI
 
+  const fetchNames = (playerOne, playerTwo) => {
+    const playerOneName = prompt("Player One Name");
+    const playerTwoName = prompt("Player Two Name");
+    playerOne.name = playerOneName;
+    playerTwo.name = playerTwoName;
+  };
+
+  const printNames = (playerOne, playerTwo) => {
+    //print
+    const body = document.querySelector("body");
+    const container = document.createElement("div");
+    container.classList.add("container");
+    body.appendChild(container);
+    //create container for names
+    const nameDiv = document.createElement("div");
+    const messageDiv = document.createElement("div");
+    nameDiv.classList.add("name-container");
+    messageDiv.classList.add("message-container");
+    container.append(nameDiv, messageDiv);
+    const playerOneSpan = document.createElement("span");
+    const playerTwoSpan = document.createElement("span");
+    playerOneSpan.textContent = `Player One: ${playerOne.name}`;
+    playerTwoSpan.textContent = `Player Two: ${playerTwo.name}`;
+    nameDiv.append(playerOneSpan, playerTwoSpan);
+  };
+
   const printBoard = () => {
     const container = document.querySelector(".container");
     //create container
@@ -40,6 +64,8 @@ const Gameboard = () => {
   };
 
   return {
+    fetchNames,
+    printNames,
     getBoard,
     getTurnCount,
     addTurnCount,
@@ -69,6 +95,8 @@ const Players = () => {
 const Controller = () => {
   //create new objects to use for game
   const {
+    fetchNames,
+    printNames,
     getBoard,
     getTurnCount,
     addTurnCount,
@@ -79,37 +107,19 @@ const Controller = () => {
   const gameboard = getBoard();
 
   //get names
-  const fetchNames = () => {
-    const playerOneName = prompt("Player One Name");
-    const playerTwoName = prompt("Player Two Name");
-    playerOne.name = playerOneName;
-    playerTwo.name = playerTwoName;
-
-    const body = document.querySelector("body");
-    const container = document.createElement("div");
-    container.classList.add("container");
-    body.appendChild(container);
-    //create container for names
-    const nameDiv = document.createElement("div");
-    const messageDiv = document.createElement("div");
-    nameDiv.classList.add("name-container");
-    messageDiv.classList.add("message-container");
-    container.append(nameDiv, messageDiv);
-    const playerOneSpan = document.createElement("span");
-    const playerTwoSpan = document.createElement("span");
-    playerOneSpan.textContent = `Player One: ${playerOne.name}`;
-    playerTwoSpan.textContent = `Player Two: ${playerTwo.name}`;
-    nameDiv.append(playerOneSpan, playerTwoSpan);
-  };
 
   const initGame = () => {
+    if (playerOne.name === "" || playerTwo.name === "") {
+      fetchNames(playerOne, playerTwo);
+    }
+    printNames(playerOne, playerTwo);
+    printBoard();
     //get selectors
     const spaces = document.querySelectorAll(".space");
     spaces.forEach((space, index) =>
       space.addEventListener("click", (e) => {
         playerTurn(
           gameboard,
-
           getTurnCount,
           addTurnCount,
           subtractTurnCount,
@@ -122,7 +132,6 @@ const Controller = () => {
 
   const playerTurn = (
     gameboard,
-
     getTurnCount,
     addTurnCount,
     subtractTurnCount,
@@ -168,31 +177,18 @@ const Controller = () => {
       e.target.textContent = activePlayer.marker;
     }
 
-    checkWinner(
-      gameboard,
-
-      activePlayer,
-      addTurnCount,
-      subtractTurnCount,
-    );
+    checkWinner(gameboard, activePlayer, addTurnCount, subtractTurnCount);
   };
 
   const checkWinner = (
     gameboard,
-
     activePlayer,
     addTurnCount,
     subtractTurnCount,
   ) => {
     const spaces = document.querySelectorAll(".space");
 
-    checkRowWin(
-      gameboard,
-
-      activePlayer,
-      subtractTurnCount,
-      spaces,
-    );
+    checkRowWin(gameboard, activePlayer, subtractTurnCount, spaces);
     checkColumnWin(gameboard, activePlayer, subtractTurnCount, spaces);
     checkDiagnolWin(gameboard, activePlayer, subtractTurnCount, spaces);
     checkDraw(gameboard, subtractTurnCount, spaces);
@@ -213,13 +209,7 @@ const Controller = () => {
     }
   };
 
-  const checkRowWin = (
-    gameboard,
-
-    activePlayer,
-    subtractTurnCount,
-    spaces,
-  ) => {
+  const checkRowWin = (gameboard, activePlayer, subtractTurnCount, spaces) => {
     const [columnArrOne, columnArrTwo, columnArrThree] = gameboard;
     // This condition checks winners for row wins
     if (
@@ -309,12 +299,12 @@ const Controller = () => {
 
     const resetBtn = document.querySelector(".reset");
     resetBtn.addEventListener("click", () => {
-      const gameDiv = document.querySelector(".game-container");
       const messageDiv = document.querySelector(".message-container");
-      gameDiv.remove();
+      const gameDiv = document.querySelector(".game-container");
       messageDiv.textContent = "";
-      const { printBoard, initGame } = Controller();
-      printBoard();
+      gameDiv.remove();
+
+      const { initGame } = Controller();
       initGame();
     });
   };
@@ -330,12 +320,9 @@ const Controller = () => {
     spaces.forEach((space) => space.classList.add("inactive"));
   };
 
-  return { fetchNames, initGame, printBoard };
+  return { initGame };
 };
 
 const game = Controller();
-//fetch names
-game.fetchNames();
-//Initiate board
-game.printBoard();
+
 game.initGame();
