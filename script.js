@@ -154,12 +154,13 @@ const Controller = () => {
       ? (activePlayer = playerOne)
       : (activePlayer = playerTwo);
 
+    console.log(activePlayer);
+
     const activePlayerNum = index;
 
     if (activePlayerNum >= 0 && activePlayerNum <= 2) {
       if (gameboard[0][activePlayerNum] !== "") {
         alert("Spot taken. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
         return;
       }
       gameboard[0][activePlayerNum] = activePlayer.marker;
@@ -168,8 +169,7 @@ const Controller = () => {
 
     if (activePlayerNum >= 3 && activePlayerNum <= 5) {
       if (gameboard[1][activePlayerNum - 3] !== "") {
-        alert("Spot taken 2. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
+        alert("Spot taken. Pick another space");
         return;
       }
       gameboard[1][activePlayerNum - 3] = activePlayer.marker;
@@ -178,8 +178,7 @@ const Controller = () => {
 
     if (activePlayerNum >= 6 && activePlayerNum <= 8) {
       if (gameboard[2][activePlayerNum - 6] !== "") {
-        alert("Spot taken 3. Pick another space");
-        playerTurn(gameboard, getTurnCount, addTurnCount, index, e);
+        alert("Spot taken. Pick another space");
         return;
       }
       gameboard[2][activePlayerNum - 6] = activePlayer.marker;
