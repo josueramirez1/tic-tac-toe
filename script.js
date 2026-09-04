@@ -108,8 +108,6 @@ const Controller = () => {
     createBoard,
   } = Gameboard();
 
-  //calling the console gameboard
-
   const initGame = () => {
     const [playerOne, playerTwo] = players;
     const noName = players.some((player) => player.name === "");
@@ -135,6 +133,7 @@ const Controller = () => {
           index,
           e,
         );
+        console.table(gameboard);
       }),
     );
   };
